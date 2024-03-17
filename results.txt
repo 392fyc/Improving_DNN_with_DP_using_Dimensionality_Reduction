@@ -1,0 +1,199 @@
+loss: 1.5915 - accuracy: 0.8713 - val_loss: 1.6271 - val_accuracy: 0.8334
+Training finished in 369.00 seconds
+Epsilon: 8.172691426205471
+Use PCA: False, DPSGD: False, Noise Multiplier: 1.1, Epochs: 400, PCA Components: N/A
+
+loss: 1.5984 - accuracy: 0.8650 - val_loss: 1.6403 - val_accuracy: 0.8208
+Training finished in 383.30 seconds
+Epsilon: 8.172691426205471
+Use PCA: False, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: N/A
+
+loss: 1.5996 - accuracy: 0.8641 - val_loss: 1.6415 - val_accuracy: 0.8191
+Training finished in 379.09 seconds
+Epsilon: 8.172691426205471
+Use PCA: False, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: N/A
+
+loss: 1.5903 - accuracy: 0.8726 - val_loss: 1.6269 - val_accuracy: 0.8344
+Training finished in 331.32 seconds
+Epsilon: 8.172691426205471
+Use PCA: False, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: N/A
+
+loss: 1.6008 - accuracy: 0.8631 - val_loss: 1.6436 - val_accuracy: 0.8180
+Training finished in 345.18 seconds
+Epsilon: 8.172691426205471
+Use PCA: False, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: N/A
+
+loss: 1.6999 - accuracy: 0.7628 - val_loss: 1.7149 - val_accuracy: 0.7456
+Training finished in 137.02 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 5
+
+loss: 1.7202 - accuracy: 0.7422 - val_loss: 1.7288 - val_accuracy: 0.7318
+Training finished in 147.64 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 5
+
+loss: 1.7002 - accuracy: 0.7629 - val_loss: 1.7162 - val_accuracy: 0.7444
+Training finished in 146.46 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 5
+
+loss: 1.7203 - accuracy: 0.7415 - val_loss: 1.7282 - val_accuracy: 0.7335
+Training finished in 147.18 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 5
+
+loss: 1.7001 - accuracy: 0.7634 - val_loss: 1.7158 - val_accuracy: 0.7444
+Training finished in 149.42 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 5
+
+loss: 1.6160 - accuracy: 0.8494 - val_loss: 1.6394 - val_accuracy: 0.8230
+Training finished in 182.63 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 10
+
+loss: 1.6165 - accuracy: 0.8486 - val_loss: 1.6401 - val_accuracy: 0.8218
+Training finished in 188.63 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 10
+
+loss: 1.6161 - accuracy: 0.8483 - val_loss: 1.6396 - val_accuracy: 0.8240
+Training finished in 183.45 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 10
+
+loss: 1.6504 - accuracy: 0.8136 - val_loss: 1.6656 - val_accuracy: 0.7962
+Training finished in 181.31 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 10
+
+loss: 1.6158 - accuracy: 0.8495 - val_loss: 1.6385 - val_accuracy: 0.8238
+Training finished in 181.19 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 10
+
+loss: 1.5379 - accuracy: 0.9301 - val_loss: 1.5807 - val_accuracy: 0.8823
+Training finished in 210.27 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 50
+
+loss: 1.5372 - accuracy: 0.9310 - val_loss: 1.5820 - val_accuracy: 0.8810
+Training finished in 210.87 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 50
+
+loss: 1.5370 - accuracy: 0.9309 - val_loss: 1.5814 - val_accuracy: 0.8813
+Training finished in 212.54 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 50
+
+loss: 1.5381 - accuracy: 0.9295 - val_loss: 1.5830 - val_accuracy: 0.8789
+Training finished in 207.09 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 50
+
+loss: 1.5374 - accuracy: 0.9308 - val_loss: 1.5813 - val_accuracy: 0.8812
+Training finished in 217.09 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 50
+
+loss: 1.5221 - accuracy: 0.9454 - val_loss: 1.5722 - val_accuracy: 0.8912
+Training finished in 223.13 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 100
+
+loss: 1.5219 - accuracy: 0.9452 - val_loss: 1.5725 - val_accuracy: 0.8902
+Training finished in 221.90 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 100
+
+loss: 1.5226 - accuracy: 0.9450 - val_loss: 1.5723 - val_accuracy: 0.8904
+Training finished in 227.63 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 100
+
+loss: 1.5231 - accuracy: 0.9443 - val_loss: 1.5730 - val_accuracy: 0.8896
+Training finished in 222.16 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 100
+
+loss: 1.5222 - accuracy: 0.9451 - val_loss: 1.5724 - val_accuracy: 0.8900
+Training finished in 222.12 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 100
+
+loss: 1.5118 - accuracy: 0.9541 - val_loss: 1.5713 - val_accuracy: 0.8915
+Training finished in 273.90 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 250
+
+loss: 1.5135 - accuracy: 0.9519 - val_loss: 1.5739 - val_accuracy: 0.8886
+Training finished in 252.68 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 250
+
+10us/sample - loss: 1.5137 - accuracy: 0.9522 - val_loss: 1.5724 - val_accuracy: 0.8886
+Training finished in 247.25 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 250
+
+loss: 1.5130 - accuracy: 0.9527 - val_loss: 1.5711 - val_accuracy: 0.8910
+Training finished in 259.71 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 250
+
+loss: 1.5129 - accuracy: 0.9526 - val_loss: 1.5700 - val_accuracy: 0.8916
+Training finished in 268.20 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 250
+
+loss: 1.5102 - accuracy: 0.9546 - val_loss: 1.5728 - val_accuracy: 0.8905
+Training finished in 341.97 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 500
+
+loss: 1.5105 - accuracy: 0.9544 - val_loss: 1.5745 - val_accuracy: 0.8874
+Training finished in 337.50 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 500
+
+loss: 1.5104 - accuracy: 0.9543 - val_loss: 1.5724 - val_accuracy: 0.8901
+Training finished in 339.05 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 500
+
+loss: 1.5094 - accuracy: 0.9552 - val_loss: 1.5734 - val_accuracy: 0.8902
+Training finished in 327.29 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 500
+
+loss: 1.5101 - accuracy: 0.9547 - val_loss: 1.5723 - val_accuracy: 0.8894
+Training finished in 321.15 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 500
+
+loss: 1.5092 - accuracy: 0.9553 - val_loss: 1.5735 - val_accuracy: 0.8884
+Training finished in 398.38 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 700
+
+loss: 1.5101 - accuracy: 0.9543 - val_loss: 1.5747 - val_accuracy: 0.8862
+Training finished in 369.16 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 700
+
+loss: 1.5086 - accuracy: 0.9559 - val_loss: 1.5744 - val_accuracy: 0.8875
+Training finished in 370.54 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 700
+
+loss: 1.5097 - accuracy: 0.9548 - val_loss: 1.5753 - val_accuracy: 0.8877
+Training finished in 366.58 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 700
+
+loss: 1.5090 - accuracy: 0.9553 - val_loss: 1.5728 - val_accuracy: 0.8890
+Training finished in 346.88 seconds
+Epsilon: 8.172691426205471
+Use PCA: True, DPSGD: True, Noise Multiplier: 1.1, Epochs: 400, PCA Components: 700

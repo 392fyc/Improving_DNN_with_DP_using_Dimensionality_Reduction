@@ -1,0 +1,5 @@
+numpy
+scikit-learn
+tensorflow==2.5.0
+tensorflow-privacy==0.1.0
+umap-learn
