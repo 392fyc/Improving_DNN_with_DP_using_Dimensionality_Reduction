@@ -14,4 +14,8 @@ umap-learn
 2. Switching to other DP algorithms to improve privacy mechanisms
 3. Using larger datasets to observe performance under complex model bases
 4. Use of other dimensionality reduction techniques
+<<<<<<< HEAD
 5. Adjustment of hyperparameters
+=======
+5. Adjustment of hyperparameters
+>>>>>>> 6aac5e8cf085b765127bbfc03b638faac65bae72
