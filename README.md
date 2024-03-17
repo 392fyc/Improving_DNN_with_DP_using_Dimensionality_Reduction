@@ -1,10 +1,17 @@
-# Deep Learning with Differential Privacy
+# Dimensionality reduction applied Deep-Learning under Differential Privacy
 
-## Prerequisites
-Windows 10 + CUDA 10 + CUDNN 7 + TensorFlow 2.0 with Anaconda 3
+# Prerequisites
+Windows 11 + Intel Core i5-12600 + TensorFlow 2.5 with Docker Desktop
 ```
-conda create -n tf2 python=3.6
-activate tf2
-conda install tensorflow-gpu==2.0.0
-pip install tensorflow-privacy==0.1.0
+numpy
+scikit-learn
+tensorflow==2.5.0
+tensorflow-privacy==0.1.0
+umap-learn
 ```
+# Future Plan
+1. Quantifying the trade off relationship between time and accuracy performance
+2. Switching to other DP algorithms to improve privacy mechanisms
+3. Using larger datasets to observe performance under complex model bases
+4. Use of other dimensionality reduction techniques
+5. Adjustment of hyperparameters
