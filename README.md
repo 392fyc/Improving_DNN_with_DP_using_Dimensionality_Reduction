@@ -1,4 +1,4 @@
-# Dimensionality reduction applied Deep-Learning under Differential Privacy
+# Improving Neural Network Training with Dimensionality Reduction Approach in the Context of Differential Privacy
 
 # Prerequisites
 Windows 11 + Intel Core i5-12600 + TensorFlow 2.5 with Docker Desktop
