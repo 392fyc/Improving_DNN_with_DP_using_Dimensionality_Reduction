@@ -16,4 +16,3 @@ umap-learn
 3. Using larger datasets to observe performance under complex model bases
 4. Use of other dimensionality reduction techniques
 5. Adjustment of hyperparameters
-
