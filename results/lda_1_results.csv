@@ -1,0 +1,2 @@
+Use LDA,Number of LDA Components,Noise Multiplier,Epochs,Total Time (s),Test Accuracy,Epsilon
+True,1,0.5,100,345.6501569747925,0.476500004529953,32.005596267721145
