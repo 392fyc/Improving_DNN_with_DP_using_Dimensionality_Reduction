@@ -15,14 +15,14 @@ from sklearn.decomposition import PCA
 
 # Define hyper-parameters
 flags.DEFINE_boolean('dpsgd', True, 'If True, train with DP-SGD. If False, train with vanilla SGD.')
-flags.DEFINE_float('learning_rate', 0.05, 'Learning rate for training')
-flags.DEFINE_float('noise_multiplier', 1.1, 'Ratio of the standard deviation to the clipping norm')
+flags.DEFINE_float('learning_rate', 0.15, 'Learning rate for training')
+flags.DEFINE_float('noise_multiplier', 3, 'Ratio of the standard deviation to the clipping norm')
 flags.DEFINE_float('l2_norm_clip', 1.0, 'Clipping norm')
-flags.DEFINE_integer('batch_size', 250, 'Batch size')
+flags.DEFINE_integer('batch_size', 200, 'Batch size')
 flags.DEFINE_integer('epochs', 400, 'Number of epochs')
-flags.DEFINE_integer('microbatches', 250, 'Number of microbatches (must evenly divide batch_size)')
+flags.DEFINE_integer('microbatches', 200, 'Number of microbatches (must evenly divide batch_size)')
 flags.DEFINE_integer('pca_components', 5, 'Number of PCA components for dimensionality reduction')
-flags.DEFINE_boolean('use_pca', False, 'Whether to use PCA for dimensionality reduction')
+flags.DEFINE_boolean('use_pca', True, 'Whether to use PCA for dimensionality reduction')
 flags.DEFINE_float('delta', 1e-2, 'Delta for DP-SGD')
 
 FLAGS = flags.FLAGS
@@ -87,7 +87,7 @@ def save_results_to_csv(n_components, noise_multiplier, epochs, total_time, test
         writer = csv.writer(file)
         # 如果文件不存在，写入列标题
         if not file_exists:
-            writer.writerow(['Run Number', 'Number of LDA Components', 'Noise Multiplier', 'Epochs', 'Total Time (s)',
+            writer.writerow(['Run Number', 'PCA Components', 'Noise Multiplier', 'Epochs', 'Total Time (s)',
                              'Test Accuracy', 'Epsilon'])
         # 追加数据，注意run_number可能为None，如果是，可以选择不写入或标记特殊值
         row = [run_number if run_number is not None else 'N/A', n_components, noise_multiplier, epochs, total_time,
