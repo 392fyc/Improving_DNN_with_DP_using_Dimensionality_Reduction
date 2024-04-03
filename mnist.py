@@ -40,7 +40,7 @@ flags.DEFINE_integer('microbatches', 250, 'Number of microbatches (must evenly d
 flags.DEFINE_string('model_dir', None, 'Model directory')
 
 FLAGS = flags.FLAGS
-delta = 1e-2  # Delta is set to 1e-5 because MNIST has 60000 training points.
+delta = 1e-5  # Delta is set to 1e-5 because MNIST has 60000 training points.
 
 
 def compute_epsilon(steps):

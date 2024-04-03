@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # 替换下面为当前运行的容器名称或ID
-CURRENT_CONTAINER="8ba4c9d9957232d20ffb06b819d9377dbcf1003244d33f74936628ec70cd69f4"
+CURRENT_CONTAINER="4b8167e69154aa2b66362efd3c91d370aef372ff3cec65bb6ebdcd5c383a6d17"
 
 # 替换下面的COMMAND_TO_RUN_NEXT_CONTAINER为下一个容器的完整docker run命令
-NEXT_CONTAINER_COMMAND="docker run --gpus all --name mnist_fashion_1_pca_500 mnist_fashion_pca_500_dp"
+NEXT_CONTAINER_COMMAND="docker run --gpus all --name mnist_pca_0 mnist_pca_0"
 
 # 目标文件路径
-HOST_PATH="D:/Research/Dimensionality_reduction_applied_Deep-Learning_under_Differential_Privacy/results/pca_5_results.csv"
+HOST_PATH="D:/Research/Dimensionality_reduction_applied_Deep-Learning_under_Differential_Privacy/results/mnist_pca_60_results.csv"
 
 # 源文件路径
-CONTAINER_PATH="mnist_fashion_1_pca_5:/app/training_results.csv"
+CONTAINER_PATH="mnist_pca_60:/app/training_results.csv"
 
 
 

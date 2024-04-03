@@ -1,7 +1,7 @@
 # Improving Neural Network Training with Dimensionality Reduction Approach in the Context of Differential Privacy
 
 # Prerequisites
-Windows 11 + GPU ASUS TUF 3070Ti + TensorFlow 2.5.0-gpu with Docker Desktop
+Windows 11 + GPU 3070Ti + TensorFlow 2.5.0-gpu with Docker Desktop
 ```
 numpy
 scikit-learn

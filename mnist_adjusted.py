@@ -62,7 +62,7 @@ class EpsilonCallback(tf.keras.callbacks.Callback):
 
 
 def load_data(use_pca):
-    (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.fashion_mnist.load_data()
+    (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
     train_images, test_images = train_images / 255.0, test_images / 255.0
 
     if use_pca:
@@ -83,17 +83,9 @@ def load_data(use_pca):
 def create_model(input_shape):
     model = Sequential()
     model.add(Flatten(input_shape=input_shape))
-    model.add(Dense(256, activation='relu', kernel_regularizer=l2(0.001)))
-    model.add(Dropout(0.5))
-    model.add(Dense(512, activation='relu', kernel_regularizer=l2(0.001)))
-    model.add(Dropout(0.5))
-    model.add(Dense(1024, activation='relu', kernel_regularizer=l2(0.001)))
-    model.add(Dropout(0.5))
-    model.add(Dense(512, activation='relu', kernel_regularizer=l2(0.001)))
-    model.add(Dense(256, activation='relu', kernel_regularizer=l2(0.001)))
+    model.add(Dense(1000, activation='relu', kernel_regularizer=l2(0.001)))
     model.add(Dense(10))
     return model
-
 
 def save_results_to_csv(n_components, noise_multiplier, epochs, total_time, test_acc, epsilon, run_number=None):
     # 文件路径
