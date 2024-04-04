@@ -1,0 +1,37 @@
+// Neural Network with PCA and DP Noise Addition Flowchart
+digraph {
+	A [label="Input Raw Data" shape=parallelogram]
+	B [label="Use PCA?" shape=diamond]
+	C [label="Reshape Image Data to 2D Matrix" shape=box]
+	D [label="Apply PCA for Dimensionality Reduction" shape=box]
+	E [label="Input Reduced Data to Neural Network" shape=box]
+	F [label="Define Neural Network Model Architecture" shape=box]
+	G [label="Compile Model with Loss Function and Optimizer" shape=box]
+	H [label="Use DP-SGD Optimizer?" shape=diamond]
+	I [label="Train with DP-SGD Optimizer" shape=box]
+	J [label="Calculate Privacy Budget Epsilon" shape=box]
+	K [label="Epsilon Reached Threshold?" shape=diamond]
+	L [label="Stop Training" shape=box]
+	M [label="Train with Regular SGD Optimizer" shape=box]
+	N [label="Model Training Complete" shape=box]
+	O [label="Evaluate Model Performance on Test Set" shape=box]
+	P [label="Save Experiment Results to CSV File" shape=box]
+	A -> B
+	B -> C [label=Yes]
+	C -> D
+	D -> E
+	B -> E [label=No]
+	E -> F
+	F -> G
+	G -> H
+	H -> I [label=Yes]
+	I -> J
+	J -> K
+	K -> L [label=Yes]
+	K -> I [label=No]
+	H -> M [label=No]
+	M -> N
+	L -> N
+	N -> O
+	O -> P
+}

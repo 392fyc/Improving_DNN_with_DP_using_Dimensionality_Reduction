@@ -1,0 +1,29 @@
+// DP Noise Addition Flowchart
+digraph {
+	A [label="Input Gradient Data" shape=parallelogram]
+	B [label="Clip Gradient Data to Specified L2 Norm" shape=box]
+	C [label="Initialize Differential Privacy Query" shape=box]
+	D [label="Split Mini-batch into Microbatches" shape=box]
+	E [label="For Each Microbatch:" shape=box]
+	F [label="Compute Microbatch Loss" shape=box]
+	G [label="Compute Gradients" shape=box]
+	H [label="Accumulate and Record Gradients" shape=box]
+	I [label="Add Gaussian Noise to Accumulated Gradients" shape=box]
+	J [label="Normalize Noisy Gradients" shape=box]
+	K [label="Output Differentially Private Gradients" shape=parallelogram]
+	L [label="Update Model Parameters" shape=box]
+	M [label="Compute Privacy Budget (Epsilon) for Each Epoch" shape=box]
+	A -> B
+	B -> C
+	C -> D
+	D -> E
+	E -> F
+	F -> G
+	G -> H
+	H -> E [label="Repeat for Each Microbatch"]
+	E -> I [label="After All Microbatches"]
+	I -> J
+	J -> K
+	K -> L
+	L -> M
+}

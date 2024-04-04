@@ -1,0 +1,17 @@
+// PCA Dimensionality Reduction Flowchart
+digraph {
+	A [label="Input Raw Data" shape=parallelogram]
+	B [label="Use PCA?" shape=diamond]
+	C [label="Reshape Image Data to 2D Matrix" shape=box]
+	D [label="Apply PCA for Dimensionality Reduction" shape=box]
+	E [label="Return Reduced Training and Test Data" shape=box]
+	F [label="Return Original Training and Test Data" shape=box]
+	G [label="Output Reduced Data" shape=parallelogram]
+	A -> B
+	B -> C [label=Yes]
+	C -> D
+	D -> E
+	B -> F [label=No]
+	E -> G
+	F -> G
+}

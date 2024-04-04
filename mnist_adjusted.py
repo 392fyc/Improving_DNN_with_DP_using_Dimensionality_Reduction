@@ -15,7 +15,7 @@ from sklearn.decomposition import PCA
 
 # Define hyper-parameters
 flags.DEFINE_boolean('dpsgd', True, 'If True, train with DP-SGD. If False, train with vanilla SGD.')
-flags.DEFINE_float('learning_rate', 0.15, 'Learning rate for training')
+flags.DEFINE_float('learning_rate', 1e-3, 'Learning rate for training')
 flags.DEFINE_float('noise_multiplier', 1.5, 'Ratio of the standard deviation to the clipping norm')
 flags.DEFINE_float('l2_norm_clip', 1.0, 'Clipping norm')
 flags.DEFINE_integer('batch_size', 600, 'Batch size')
