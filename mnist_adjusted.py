@@ -108,7 +108,7 @@ def save_results_to_csv(n_components, noise_multiplier, epochs, total_time, test
 def main(argv):
     del argv  # Unused.
 
-    for run in range(1):
+    for run in range(30):
         print(f"Starting run {run + 1}/30")
         start_time = time.time()
 

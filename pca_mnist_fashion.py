@@ -24,7 +24,7 @@ flags.DEFINE_integer('microbatches', 600, 'Number of microbatches (must evenly d
 flags.DEFINE_integer('pca_components', 60, 'Number of PCA components for dimensionality reduction')
 flags.DEFINE_boolean('use_pca', True, 'Whether to use PCA for dimensionality reduction')
 flags.DEFINE_float('delta', 1e-5, 'Delta for DP-SGD')
-flags.DEFINE_float('epsilon_accountant', 8.0, 'Epsilon threshold to stop training for DP-SGD.')
+flags.DEFINE_float('epsilon_accountant', 8.17, 'Epsilon threshold to stop training for DP-SGD.')
 
 FLAGS = flags.FLAGS
 

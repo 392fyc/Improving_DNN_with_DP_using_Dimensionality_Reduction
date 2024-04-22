@@ -1,0 +1,19 @@
+// DP-SGD Optimization Flowchart
+digraph {
+	node [fontname="MS Gothic"]
+	edge [fontname="MS Gothic"]
+	A [label="生データの入力" shape=box]
+	H [label="DPを使うか" shape=diamond]
+	I [label="DPでトレーニング" shape=ellipse]
+	J [label="ε累計の計算" shape=ellipse]
+	M [label="通常でトレーニング" shape=ellipse]
+	N [label="トレーニング完了" shape=box]
+	O [label="検証精度とεを出力" shape=box]
+	A -> H
+	H -> I [label="はい"]
+	H -> M [label="いいえ"]
+	I -> J
+	J -> N
+	M -> N
+	N -> O
+}

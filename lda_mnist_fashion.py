@@ -18,14 +18,15 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 # Define hyper-parameters
 flags.DEFINE_boolean('dpsgd', True, 'If True, train with DP-SGD. If False, train with vanilla SGD.')
 flags.DEFINE_float('learning_rate', 0.15, 'Learning rate for training')
-flags.DEFINE_float('noise_multiplier', 0.5, 'Ratio of the standard deviation to the clipping norm')
+flags.DEFINE_float('noise_multiplier', 2.0, 'Ratio of the standard deviation to the clipping norm')
 flags.DEFINE_float('l2_norm_clip', 1.0, 'Clipping norm')
-flags.DEFINE_integer('batch_size', 250, 'Batch size')
+flags.DEFINE_integer('batch_size', 600, 'Batch size')
 flags.DEFINE_integer('epochs', 400, 'Number of epochs')
-flags.DEFINE_integer('microbatches', 250, 'Number of microbatches (must evenly divide batch_size)')
-flags.DEFINE_integer('lda_components', 1, 'Number of LDA components for dimensionality reduction')
+flags.DEFINE_integer('microbatches', 800, 'Number of microbatches (must evenly divide batch_size)')
+flags.DEFINE_integer('lda_components', 8, 'Number of LDA components for dimensionality reduction')
 flags.DEFINE_boolean('use_lda', True, 'Whether to use LDA for dimensionality reduction')
 flags.DEFINE_float('delta', 1e-5, 'Delta for DP-SGD')
+flags.DEFINE_float('epsilon_accountant', 8.0, 'Epsilon accountant')
 
 FLAGS = flags.FLAGS
 
@@ -44,6 +45,24 @@ def compute_epsilon(steps):
     # Now handle all returned values properly
     epsilon, best_order, *rest = rdp_accountant.get_privacy_spent(orders, rdp, target_delta=FLAGS.delta)
     return epsilon
+
+
+class EpsilonCallback(tf.keras.callbacks.Callback):
+    def __init__(self, epsilon_accountant, train_data_size):
+        super(EpsilonCallback, self).__init__()
+        self.epsilon_accountant = epsilon_accountant
+        self.train_data_size = train_data_size
+        self.global_epsilon = 0  # 添加一个属性来存储全局epsilon
+        self.current_epoch = 0  # 添加一个属性来存储当前的epoch数
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.current_epoch = epoch + 1  # 更新当前的epoch数
+        steps = self.current_epoch * (self.train_data_size // FLAGS.batch_size)
+        self.global_epsilon = compute_epsilon(steps)
+        logging.info(f'Epoch {self.current_epoch}: Epsilon = {self.global_epsilon:.2f}')
+        if self.global_epsilon >= self.epsilon_accountant:
+            logging.info(f'Epsilon {self.global_epsilon:.2f} has reached or exceeded the threshold {self.epsilon_accountant} at epoch {self.current_epoch}. Stopping training.')
+            self.model.stop_training = True
 
 
 def load_data_with_augmentation(use_lda):
@@ -105,9 +124,9 @@ def save_results_to_csv(n_components, noise_multiplier, epochs, total_time, test
 
 
 def main(argv):
-    del argv  # Unused
+    del argv  # Unused.
 
-    for run in range(30):  # 运行模型30次
+    for run in range(1):  # 运行模型30次
         print(f"Starting run {run + 1}/30")
         start_time = time.time()
         train_data, train_labels, test_data, test_labels = load_data_with_augmentation(FLAGS.use_lda)
@@ -123,18 +142,25 @@ def main(argv):
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
         model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
-        model.fit(train_data, train_labels, epochs=FLAGS.epochs, validation_data=(test_data, test_labels),
-                  batch_size=FLAGS.batch_size)
+
+        epsilon_callback = EpsilonCallback(FLAGS.epsilon_accountant, train_data.shape[0])
+
+        history = model.fit(train_data, train_labels, epochs=FLAGS.epochs, validation_data=(test_data, test_labels),
+                  batch_size=FLAGS.batch_size, callbacks=[epsilon_callback])
 
         total_time = time.time() - start_time
-        epsilon = compute_epsilon((train_data.shape[0] // FLAGS.batch_size) * FLAGS.epochs)
+
+        # 使用回调中更新的全局epsilon值
+        final_epsilon = epsilon_callback.global_epsilon
+        final_epoch = epsilon_callback.current_epoch  # 获取训练实际运行的epoch数
+
         test_loss, test_acc = model.evaluate(test_data, test_labels)
 
         # 确定n_components的值
         n_components = FLAGS.lda_components if FLAGS.use_lda else 784
 
-        # 调用修改后的save_results_to_csv函数
-        save_results_to_csv(n_components, FLAGS.noise_multiplier, FLAGS.epochs, total_time, test_acc, epsilon, run + 1)
+        # 调用save_results_to_csv时，使用final_epsilon作为epsilon的值
+        save_results_to_csv(n_components, FLAGS.noise_multiplier, final_epoch, total_time, test_acc, final_epsilon, run + 1)
 
         # 计算并记录当前使用的维度
         if FLAGS.use_lda:
@@ -146,9 +172,9 @@ def main(argv):
         logging.info(f"Run {run + 1}/30 finished")
         logging.info(f"Training finished in {total_time:.2f} seconds")
         logging.info(f"Test accuracy: {test_acc:.4f}")
-        logging.info(f"Epsilon: {epsilon:.2f}")
+        logging.info(f"Epsilon: {final_epsilon:.2f}")
         logging.info("Hyperparameters:")
-        logging.info(f"Used dimensions: {used_dimensions}, DPSGD: {FLAGS.dpsgd}, Noise Multiplier: {FLAGS.noise_multiplier}, Epochs: {FLAGS.epochs}")
+        logging.info(f"Used dimensions: {used_dimensions}, DPSGD: {FLAGS.dpsgd}, Noise Multiplier: {FLAGS.noise_multiplier}, Epochs: {final_epoch}")
 
 if __name__ == '__main__':
     app.run(main)

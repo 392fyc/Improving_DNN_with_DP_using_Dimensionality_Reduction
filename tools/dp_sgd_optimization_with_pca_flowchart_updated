@@ -1,0 +1,31 @@
+// DP-SGD Optimization with PCA Flowchart
+digraph {
+	node [fontname="MS Gothic"]
+	edge [fontname="MS Gothic"]
+	A [label="生データの入力" shape=box]
+	B [label="次元削減を適用するか" shape=diamond]
+	C [label="指定された次元でデータを削減" shape=ellipse]
+	D [label="データ出力" shape=ellipse]
+	H [label="DPを使うか" shape=diamond]
+	I [label="εを指定、DPでトレーニング" shape=ellipse]
+	J [label="ε追跡" shape=ellipse]
+	K [label="εがしきい値に到達したか" shape=diamond]
+	L [label="到達したepoch出力" shape=ellipse]
+	M [label="通常でトレーニング" shape=ellipse]
+	N [label="トレーニング完了" shape=box]
+	O [label="検証精度、訓練時間、εを出力" shape=box]
+	A -> B
+	B -> C [label="はい"]
+	B -> D [label="いいえ"]
+	C -> D
+	D -> H
+	H -> I [label="はい"]
+	H -> M [label="いいえ"]
+	I -> J
+	J -> K
+	K -> L [label="はい"]
+	K -> N [label="いいえ"]
+	M -> N
+	N -> O
+	L -> O [style=dotted]
+}
