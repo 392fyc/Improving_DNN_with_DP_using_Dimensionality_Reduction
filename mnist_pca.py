@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.regularizers import l2
-from dp_optimizer import DPGradientDescentGaussianOptimizer
+from dp_optimizer import DPGradientDescentLaplaceOptimizer
 from tensorflow_privacy.privacy.analysis import rdp_accountant
 from absl import app, flags, logging
 import time
@@ -19,7 +19,7 @@ logging.set_verbosity(logging.ERROR)  # This will show only ERROR messages and h
 flags.DEFINE_boolean('dpsgd', True, 'Train with DP-SGD if True, otherwise with vanilla SGD')
 flags.DEFINE_float('learning_rate', 0.01, 'Learning rate for training')
 flags.DEFINE_float('noise_multiplier', 6.4, 'Ratio of the standard deviation to the clipping norm')
-flags.DEFINE_float('l2_norm_clip', 1.0, 'Clipping norm')
+flags.DEFINE_float('l1_norm_clip', 1.0, 'Clipping norm')
 flags.DEFINE_integer('batch_size', 1000, 'Batch size')
 flags.DEFINE_integer('epochs', 400, 'Number of epochs')
 flags.DEFINE_integer('microbatches', 1000, 'Number of microbatches, must evenly divide batch_size')
@@ -63,9 +63,9 @@ def load_data(n_components):
 
 def create_model(input_shape):
     model = Sequential([
-        Flatten(input_shape=input_shape),
-        Dense(1000, activation='relu', kernel_regularizer=l2(0.001)),
-        Dense(10)
+        Dense(64, activation='relu', kernel_regularizer=l2(0.01), input_shape=(input_shape,)),
+        Dense(32, activation='relu', kernel_regularizer=l2(0.01)),
+        Dense(1, activation='sigmoid')
     ])
     return model
 
@@ -146,9 +146,9 @@ def evaluate(n_components, noise_multiplier, max_run_time, num_runs=None):
         input_shape = (n_components,)
         model = create_model(input_shape)
 
-        optimizer = DPGradientDescentGaussianOptimizer(
-            l2_norm_clip=FLAGS.l2_norm_clip,
-            noise_multiplier=noise_multiplier,  # 使用传入的noise_multiplier参数
+        optimizer = DPGradientDescentLaplaceOptimizer(
+            l1_norm_clip=FLAGS.l1_norm_clip,
+            noise_multiplier=noise_multiplier,
             num_microbatches=FLAGS.microbatches,
             learning_rate=FLAGS.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)

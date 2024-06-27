@@ -11,4 +11,4 @@ WORKDIR /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 指定容器启动时运行的命令
-CMD ["python", "./mnist.py"]
+CMD ["python", "./diabetic_jtree.py"]
