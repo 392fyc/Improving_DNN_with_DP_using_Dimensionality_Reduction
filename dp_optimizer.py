@@ -1,6 +1,4 @@
 import tensorflow as tf
-from tensorflow_privacy.privacy.analysis import privacy_ledger
-
 
 class DPGradientDescentLaplaceOptimizer(tf.keras.optimizers.SGD):
     def __init__(self, l1_norm_clip, noise_multiplier, num_microbatches=None, learning_rate=0.01, *args, **kwargs):
@@ -40,9 +38,9 @@ class DPGradientDescentLaplaceOptimizer(tf.keras.optimizers.SGD):
         return list(zip(average_grads, var_list))
 
 class LaplaceSumQuery:
-    def __init__(self, l1_norm_clip, l1_norm_epsilon):
+    def __init__(self, l1_norm_clip, noise_multiplier):
         self._l1_norm_clip = l1_norm_clip
-        self._l1_norm_epsilon = l1_norm_epsilon
+        self._noise_multiplier = noise_multiplier
 
     def initial_global_state(self):
         return None
@@ -54,13 +52,13 @@ class LaplaceSumQuery:
         return tf.nest.map_structure(tf.zeros_like, templates)
 
     def accumulate_record(self, params, sample_state, record):
-        clipped_record = tf.clip_by_norm(record, self._l1_norm_clip, axes=[0], ord=1)
+        clipped_record = tf.clip_by_norm(record, self._l2_norm_clip, axes=[0])
         return tf.nest.map_structure(tf.add, sample_state, clipped_record)
 
     def get_noised_result(self, sample_state, global_state):
         def add_noise(v):
-            noise_stddev = self._l1_norm_clip / self._l1_norm_epsilon
-            noise = tf.random.laplace(tf.shape(v), 0.0, noise_stddev)
+            noise_scale = self._l1_norm_clip * self._noise_multiplier
+            noise = tf.random.laplace(tf.shape(v), 0.0, noise_scale)
             return v + noise
 
         return tf.nest.map_structure(add_noise, sample_state), global_state
@@ -102,17 +100,9 @@ def make_optimizer_class(cls):
 
 def make_laplace_optimizer_class(cls):
     class DPLaplaceOptimizerClass(make_optimizer_class(cls)):
-        def __init__(self, l1_norm_clip, noise_multiplier, num_microbatches=None, ledger=None, *args, **kwargs):
-            dp_sum_query = LaplaceSumQuery(l1_norm_clip, l1_norm_clip * noise_multiplier)
-
-            if ledger:
-                dp_sum_query = privacy_ledger.QueryWithLedger(dp_sum_query, ledger=ledger)
-
+        def __init__(self, l1_norm_clip, noise_multiplier, num_microbatches=None, *args, **kwargs):
+            dp_sum_query = LaplaceSumQuery(l1_norm_clip, noise_multiplier)
             super(DPLaplaceOptimizerClass, self).__init__(dp_sum_query, num_microbatches, *args, **kwargs)
-
-        @property
-        def ledger(self):
-            return getattr(self._dp_sum_query, 'ledger', None)
 
     return DPLaplaceOptimizerClass
 

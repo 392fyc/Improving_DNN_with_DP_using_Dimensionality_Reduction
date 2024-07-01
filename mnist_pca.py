@@ -3,19 +3,20 @@ from __future__ import absolute_import, division, print_function
 import csv
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.regularizers import l2
 from dp_optimizer import DPGradientDescentLaplaceOptimizer
-from tensorflow_privacy.privacy.analysis import rdp_accountant
 from absl import app, flags, logging
 import time
 from sklearn.decomposition import PCA
 import os
+from dp_utils import evaluate_epsilon_laplace, EpsilonCallback
+
+
 logging.set_verbosity(logging.ERROR)  # This will show only ERROR messages and higher
 
 
-# Define hyper-parameters using the flags module
 flags.DEFINE_boolean('dpsgd', True, 'Train with DP-SGD if True, otherwise with vanilla SGD')
 flags.DEFINE_float('learning_rate', 0.01, 'Learning rate for training')
 flags.DEFINE_float('noise_multiplier', 6.4, 'Ratio of the standard deviation to the clipping norm')
@@ -31,23 +32,31 @@ flags.DEFINE_integer('runs_per_dim', 1, 'Number of runs for each dimension')
 FLAGS = flags.FLAGS
 
 
-def compute_epsilon(steps):
-    """Computes epsilon value for given hyperparameters."""
-    if FLAGS.noise_multiplier == 0.0:
-        return float('inf')
-    orders = [1 + x / 10. for x in range(1, 100)] + list(range(12, 64))
-    # Assume the training set size is 60000
-    sampling_probability = FLAGS.batch_size / 60000
-    rdp = rdp_accountant.compute_rdp(q=sampling_probability,
-                                     noise_multiplier=FLAGS.noise_multiplier,
-                                     steps=steps,
-                                     orders=orders)
-    # Now handle all returned values properly
-    epsilon, best_order, *rest = rdp_accountant.get_privacy_spent(orders, rdp, target_delta=FLAGS.delta)
-    return epsilon
+def tune_noise_multiplier(target_epsilon, tolerance=1e-3):
+    lower = 1.0
+    upper = 20.0
+    while upper - lower > tolerance:
+        noise_multiplier = (lower + upper) / 2  # 不进行四舍五入
+        FLAGS.noise_multiplier = noise_multiplier
+        (train_images, _), (_, _) = tf.keras.datasets.mnist.load_data()
+        epsilon = evaluate_epsilon_laplace(1, noise_multiplier, FLAGS.batch_size, FLAGS.epochs, len(train_images))
+        print(f"Trying noise_multiplier={noise_multiplier:.3f}, got epsilon={epsilon:.3f}")
+        if abs(epsilon - target_epsilon) <= tolerance:
+            optimal_noise_multiplier = noise_multiplier
+            FLAGS.noise_multiplier = optimal_noise_multiplier
+            print(f"Optimal noise_multiplier={optimal_noise_multiplier:.3f}, epsilon={epsilon:.3f}")
+            return optimal_noise_multiplier
+        elif epsilon < target_epsilon:
+            upper = noise_multiplier
+        else:
+            lower = noise_multiplier
+    optimal_noise_multiplier = noise_multiplier
+    FLAGS.noise_multiplier = optimal_noise_multiplier
+    print(f"Optimal noise_multiplier={optimal_noise_multiplier:.3f}, epsilon={epsilon:.3f}")
+    return optimal_noise_multiplier
 
 
-def load_data(n_components):
+def load_mnist_data(n_components):
     (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
     train_images, test_images = train_images / 255.0, test_images / 255.0
 
@@ -70,20 +79,6 @@ def create_model(input_shape):
     return model
 
 
-class EpsilonCallback(tf.keras.callbacks.Callback):
-    def __init__(self, epsilon_accountant, train_data_size):
-        super(EpsilonCallback, self).__init__()
-        self.epsilon_accountant = epsilon_accountant
-        self.train_data_size = train_data_size
-        self.global_epsilon = 0
-
-    def on_epoch_end(self, epoch, logs=None):
-        steps = (epoch + 1) * (self.train_data_size // FLAGS.batch_size)
-        self.global_epsilon = compute_epsilon(steps)
-        if self.global_epsilon >= self.epsilon_accountant:
-            self.model.stop_training = True
-
-
 def epsilon_vs_noise_multiplier(noise_multipliers, original_dims, max_run_time):
     epsilons = []
     for noise_multiplier in noise_multipliers:
@@ -96,42 +91,6 @@ def exponential_func(x, a, b, c):
     return a * np.exp(-b * x) + c
 
 
-def tune_noise_multiplier(target_epsilon, tolerance=1e-3):
-    lower = 1.0
-    upper = 20.0
-    while upper - lower > tolerance:
-        noise_multiplier = (lower + upper) / 2  # 不进行四舍五入
-        FLAGS.noise_multiplier = noise_multiplier
-        (train_images, _), (_, _) = tf.keras.datasets.mnist.load_data()
-        epsilon = evaluate_epsilon(1, noise_multiplier, FLAGS.batch_size, FLAGS.epochs, len(train_images))
-        print(f"Trying noise_multiplier={noise_multiplier:.3f}, got epsilon={epsilon:.3f}")
-        if abs(epsilon - target_epsilon) <= tolerance:
-            optimal_noise_multiplier = noise_multiplier
-            FLAGS.noise_multiplier = optimal_noise_multiplier
-            print(f"Optimal noise_multiplier={optimal_noise_multiplier:.3f}, epsilon={epsilon:.3f}")
-            return optimal_noise_multiplier
-        elif epsilon < target_epsilon:
-            upper = noise_multiplier
-        else:
-            lower = noise_multiplier
-    optimal_noise_multiplier = noise_multiplier
-    FLAGS.noise_multiplier = optimal_noise_multiplier
-    print(f"Optimal noise_multiplier={optimal_noise_multiplier:.3f}, epsilon={epsilon:.3f}")
-    return optimal_noise_multiplier
-
-
-def evaluate_epsilon(n_components, noise_multiplier, batch_size, epochs, train_data_size):
-    steps = epochs * (train_data_size // batch_size)
-    sampling_probability = batch_size / train_data_size
-    orders = [1 + x / 10. for x in range(1, 100)] + list(range(12, 64))
-    rdp = rdp_accountant.compute_rdp(q=sampling_probability,
-                                     noise_multiplier=noise_multiplier,  # 使用传入的noise_multiplier
-                                     steps=steps,
-                                     orders=orders)
-    epsilon = rdp_accountant.get_privacy_spent(orders, rdp, target_delta=FLAGS.delta)[0]
-    return epsilon
-
-
 def evaluate(n_components, noise_multiplier, max_run_time, num_runs=None):
     if num_runs is None:
         num_runs = FLAGS.runs_per_dim
@@ -142,7 +101,7 @@ def evaluate(n_components, noise_multiplier, max_run_time, num_runs=None):
     for run in range(num_runs):
         print(f"Training with {n_components} dimensions, run {run + 1}/{num_runs}")
         start_time = time.time()
-        train_data, train_labels, test_data, test_labels = load_data(n_components)
+        train_data, train_labels, test_data, test_labels = load_mnist_data(n_components)
         input_shape = (n_components,)
         model = create_model(input_shape)
 

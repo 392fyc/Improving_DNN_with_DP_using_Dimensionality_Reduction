@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # 替换下面为当前运行的容器名称或ID
-CURRENT_CONTAINER="07c5ac1b573b3b904ca3a8f83edd98ffa871e2882306bb796b264abe6803f65b"
+CURRENT_CONTAINER="64728269a0c7b939d6a47355a8f476add76af57023624ce002d90574c13e72ce"
 
 # 目标文件路径
-HOST_PATH="D:/Research/Dimensionality_reduction_applied_Deep-Learning_under_Differential_Privacy/results/mnist_pca_0_results.csv"
+HOST_PATH="D:/Research/Dimensionality_reduction_applied_Deep-Learning_under_Differential_Privacy/results/diabetic_jtree_results.csv"
 
 # 源文件路径
-CONTAINER_PATH="mnist_pca_0:/app/training_results.csv"
+CONTAINER_PATH="diabetic_jtree:/app/results.csv"
 
 
 # 检测容器运行
