@@ -13,7 +13,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import pandas as pd
-import os
 
 logging.set_verbosity(logging.ERROR)
 
@@ -22,9 +21,9 @@ flags.DEFINE_float('l1_norm_clip', 1.0, 'Clipping norm')
 flags.DEFINE_integer('batch_size', 2048, 'Batch size')
 flags.DEFINE_integer('epochs', 100, 'Number of epochs')
 flags.DEFINE_integer('microbatches', 1, 'Number of microbatches, must evenly divide batch_size')
-flags.DEFINE_integer('pca_components', 17, 'Number of PCA components to use')
+flags.DEFINE_boolean('use_pca', True, 'Whether to use PCA for dimensionality reduction')
 flags.DEFINE_float('epsilon_accountant', 0.5, 'Target epsilon for differential privacy')
-flags.DEFINE_integer('num_runs', 50, 'Number of training runs')
+flags.DEFINE_integer('num_runs', 10, 'Number of training runs')
 
 FLAGS = flags.FLAGS
 
@@ -103,26 +102,26 @@ def cumulative_explained_variance(X, target_variance=0.90):
     return n_components, cumulative_variance
 
 
-def prepare_data(X, y, n_components, test_size=0.2):
-    # 分割数据集
+def prepare_data(X, y, n_components=None, test_size=0.2):
     X_train, X_test, y1_train, y1_test, y2_train, y2_test = train_test_split(
         X, y[0], y[1], test_size=test_size, random_state=np.random.randint(10000))
 
-    # 标准化特征
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
-    # 确保所有特征值非负
     X_train_scaled = np.clip(X_train_scaled, 0, None)
     X_test_scaled = np.clip(X_test_scaled, 0, None)
 
-    # 应用PCA
-    pca = PCA(n_components=n_components)
-    X_train_pca = pca.fit_transform(X_train_scaled)
-    X_test_pca = pca.transform(X_test_scaled)
+    if FLAGS.use_pca and n_components is not None:
+        pca = PCA(n_components=n_components)
+        X_train_final = pca.fit_transform(X_train_scaled)
+        X_test_final = pca.transform(X_test_scaled)
+    else:
+        X_train_final = X_train_scaled
+        X_test_final = X_test_scaled
 
-    return X_train_pca, [y1_train, y2_train], X_test_pca, [y1_test, y2_test]
+    return X_train_final, [y1_train, y2_train], X_test_final, [y1_test, y2_test]
 
 
 def create_model(input_shape):
@@ -150,7 +149,6 @@ def create_model(input_shape):
 def evaluate(X, y, noise_multiplier, n_components):
     start_time = time.time()
 
-    # 准备数据
     train_data, train_labels, test_data, test_labels = prepare_data(X, y, n_components)
 
     input_shape = train_data.shape[1]
@@ -172,9 +170,8 @@ def evaluate(X, y, noise_multiplier, n_components):
               batch_size=FLAGS.batch_size,
               verbose=0)
 
-    total_time = time.time() - start_time
+    train_time = time.time() - start_time
 
-    # 评估测试集性能
     test_loss, race_loss, readmission_loss, race_acc, readmission_acc = model.evaluate(test_data, test_labels, verbose=0)
 
     epsilon = evaluate_epsilon_laplace(
@@ -186,7 +183,7 @@ def evaluate(X, y, noise_multiplier, n_components):
     )
 
     info = {
-        'total_time': total_time,
+        'train_time': train_time,
         'test_race_acc': race_acc,
         'test_readmission_acc': readmission_acc,
         'test_race_loss': race_loss,
@@ -197,20 +194,23 @@ def evaluate(X, y, noise_multiplier, n_components):
     return info
 
 
-def save_results_to_csv(results):
+def save_results_to_csv(results, dimension_optimization_time, optimal_components):
     file_path = 'results.csv'
-    file_exists = os.path.isfile(file_path)
+    avg_dim_opt_time = dimension_optimization_time / len(results) if FLAGS.use_pca else 0
 
-    with open(file_path, mode='a', newline='') as file:
+    with open(file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
-        if not file_exists:
-            writer.writerow(['Run', 'PCA Components', 'Total Time (s)',
-                             'Test Race Acc', 'Test Readmission Acc',
-                             'Epsilon'])
+        writer.writerow(['Run', 'PCA Components', 'Total Time (s)',
+                         'Test Race Acc', 'Test Readmission Acc',
+                         'Epsilon'])
 
         for run, result in enumerate(results):
-            writer.writerow([run + 1, FLAGS.pca_components, result['total_time'],
-                             result['test_race_acc'], result['test_readmission_acc'],
+            adjusted_time = result['train_time'] + avg_dim_opt_time
+            writer.writerow([run + 1,
+                             optimal_components if FLAGS.use_pca else 'N/A',
+                             adjusted_time,
+                             result['test_race_acc'],
+                             result['test_readmission_acc'],
                              result['epsilon']])
 
 
@@ -223,9 +223,21 @@ def main(argv):
         print("Failed to load data. Exiting.")
         return
 
-    # 选择最佳PCA维度
-    optimal_components, cumulative_variance = cumulative_explained_variance(X)
-    print(f"Optimal number of components according to CEV: {optimal_components}")
+    print(f"Data loaded. Shape of data: {X.shape}")
+    print(f"Positive samples for race: {sum(y[0])}/{len(y[0])} ({sum(y[0]) / len(y[0]) * 100:.2f}%)")
+    print(f"Positive samples for readmission: {sum(y[1])}/{len(y[1])} ({sum(y[1]) / len(y[1]) * 100:.2f}%)")
+
+    optimal_components = None
+    dimension_optimization_time = 0
+
+    if FLAGS.use_pca:
+        dim_opt_start_time = time.time()
+        optimal_components, cumulative_variance = cumulative_explained_variance(X)
+        dimension_optimization_time = time.time() - dim_opt_start_time
+        print(f"Optimal number of components according to CEV: {optimal_components}")
+        print(f"Dimension optimization time: {dimension_optimization_time:.2f} seconds")
+    else:
+        print("PCA is disabled. Using all original features.")
 
     target_epsilon = FLAGS.epsilon_accountant
     noise_multiplier = tune_noise_multiplier_laplace(X, y, target_epsilon, optimal_components)
@@ -251,7 +263,7 @@ def main(argv):
     avg_results = {
         'test_race_acc': np.mean([r['test_race_acc'] for r in all_results]),
         'test_readmission_acc': np.mean([r['test_readmission_acc'] for r in all_results]),
-        'total_time': np.mean([r['total_time'] for r in all_results]),
+        'total_time': np.mean([r['train_time'] for r in all_results]),
         'epsilon': np.mean([r['epsilon'] for r in all_results])
     }
 
@@ -261,7 +273,7 @@ def main(argv):
     print(f"Average Test Readmission Accuracy: {avg_results['test_readmission_acc']:.4f}")
     print(f"Average Epsilon: {avg_results['epsilon']:.4f}")
 
-    save_results_to_csv(all_results)
+    save_results_to_csv(all_results, dimension_optimization_time, optimal_components)
     print("Results saved to results.csv")
 
 if __name__ == '__main__':

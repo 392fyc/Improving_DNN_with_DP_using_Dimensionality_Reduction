@@ -4,10 +4,12 @@
 Windows 11 + GPU 3070Ti + TensorFlow 2.5.0-gpu with Docker Desktop
 ```
 numpy
+pandas
 scikit-learn
 tensorflow==2.5.0
 tensorflow-privacy==0.1.0
-umap-learn
+tensorflow-datasets
+absl-py
 
 ```
 # Future Plan
